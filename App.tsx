@@ -5,40 +5,67 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 
-function App() {
+import { databaseClient } from './src/infrastructure/database/DatabaseClient';
+import { migrationManager } from './src/infrastructure/database/MigrationManager';
+
+function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [dbStatus, setDbStatus] = useState('Initializing...');
+
+  useEffect(() => {
+    const initDB = async () => {
+      try {
+        await databaseClient.init();
+        await migrationManager.runMigrations();
+        setDbStatus('Database initialized & Migrations applied successfully ✅');
+      } catch (error) {
+        setDbStatus(`Error: ${error}`);
+        console.error(error);
+      }
+    };
+
+    initDB();
+  }, []);
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>LimitLift</Text>
+        <Text style={styles.status}>{dbStatus}</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  status: {
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
