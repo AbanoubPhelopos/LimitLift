@@ -1,10 +1,12 @@
 import { databaseClient } from './DatabaseClient';
 import { Migration } from '../../core/types/database';
 import { Migration_001_Initial } from './migrations/Migration_001_Initial';
+import { Migration_002_SchemaRefinement } from './migrations/Migration_002_SchemaRefinement';
 
 class MigrationManager {
     private migrations: Migration[] = [
         Migration_001_Initial,
+        Migration_002_SchemaRefinement,
     ];
 
     public async runMigrations(): Promise<void> {

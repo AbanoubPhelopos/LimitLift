@@ -1,10 +1,10 @@
 import { Migration } from '../../../core/types/database';
 
 export const Migration_001_Initial: Migration = {
-    name: '001_Initial_Schema',
-    up: async (db: any) => {
-        // 1. WorkoutSplit
-        await db.execute(`
+  name: '001_Initial_Schema',
+  up: async (db: any) => {
+
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS WorkoutSplit (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
@@ -14,8 +14,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 2. TrainingDay
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS TrainingDay (
         id TEXT PRIMARY KEY,
         splitId TEXT NOT NULL,
@@ -28,8 +27,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 3. ExerciseTemplate
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS ExerciseTemplate (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
@@ -41,8 +39,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 4. TrainingDayExercise
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS TrainingDayExercise (
         id TEXT PRIMARY KEY,
         trainingDayId TEXT NOT NULL,
@@ -56,8 +53,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 5. ExerciseVariation
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS ExerciseVariation (
         id TEXT PRIMARY KEY,
         exerciseId TEXT NOT NULL,
@@ -71,8 +67,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 6. WorkoutSession
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS WorkoutSession (
         id TEXT PRIMARY KEY,
         trainingDayId TEXT NOT NULL,
@@ -86,8 +81,7 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // 7. SetRecord
-        await db.execute(`
+    await db.execute(`
       CREATE TABLE IF NOT EXISTS SetRecord (
         id TEXT PRIMARY KEY,
         workoutSessionId TEXT NOT NULL,
@@ -103,15 +97,14 @@ export const Migration_001_Initial: Migration = {
       );
     `);
 
-        // Create Migrations table if it doesn't exist (handled by manager usually, but good to have)
-    },
-    down: async (db: any) => {
-        await db.execute('DROP TABLE IF EXISTS SetRecord');
-        await db.execute('DROP TABLE IF EXISTS WorkoutSession');
-        await db.execute('DROP TABLE IF EXISTS ExerciseVariation');
-        await db.execute('DROP TABLE IF EXISTS TrainingDayExercise');
-        await db.execute('DROP TABLE IF EXISTS ExerciseTemplate');
-        await db.execute('DROP TABLE IF EXISTS TrainingDay');
-        await db.execute('DROP TABLE IF EXISTS WorkoutSplit');
-    },
+  },
+  down: async (db: any) => {
+    await db.execute('DROP TABLE IF EXISTS SetRecord');
+    await db.execute('DROP TABLE IF EXISTS WorkoutSession');
+    await db.execute('DROP TABLE IF EXISTS ExerciseVariation');
+    await db.execute('DROP TABLE IF EXISTS TrainingDayExercise');
+    await db.execute('DROP TABLE IF EXISTS ExerciseTemplate');
+    await db.execute('DROP TABLE IF EXISTS TrainingDay');
+    await db.execute('DROP TABLE IF EXISTS WorkoutSplit');
+  },
 };

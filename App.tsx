@@ -27,7 +27,17 @@ function App(): React.JSX.Element {
       try {
         await databaseClient.init();
         await migrationManager.runMigrations();
-        setDbStatus('Database initialized & Migrations applied successfully ✅');
+
+        // Verification: Check if new table exists
+        const result = await databaseClient.execute(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='VariationRotationTracker'"
+        );
+        const tableExists = result.rows?._array.length > 0;
+
+        setDbStatus(
+          `Database initialized & Migrations applied ✅\nVariationRotationTracker Table: ${tableExists ? 'Found ✅' : 'Missing ❌'
+          }`
+        );
       } catch (error) {
         setDbStatus(`Error: ${error}`);
         console.error(error);
