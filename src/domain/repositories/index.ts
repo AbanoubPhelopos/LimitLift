@@ -42,4 +42,5 @@ export interface IWorkoutSessionRepository {
 
     createSet(set: WorkoutSet): Promise<void>;
     getSetsForExerciseSession(exerciseSessionId: string): Promise<WorkoutSet[]>;
+    getSetsForExercise(exerciseId: string): Promise<WorkoutSet[]>;
 }

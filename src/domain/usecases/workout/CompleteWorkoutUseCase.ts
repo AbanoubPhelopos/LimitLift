@@ -12,12 +12,24 @@ export class CompleteWorkoutUseCase {
                 return Result.fail(new Error('Workout session not found'));
             }
 
-            // Calculate total volume (simplified for now, ideally aggregated from sets)
-            // For now, we just update status and endTime
+            // Calculate total volume
+            let totalVolume = 0;
+            const exerciseSessions = await this.workoutSessionRepository.getExerciseSessions(sessionId);
+
+            for (const exerciseSession of exerciseSessions) {
+                const sets = await this.workoutSessionRepository.getSetsForExerciseSession(exerciseSession.id);
+                for (const set of sets) {
+                    if (set.isCompleted) {
+                        totalVolume += set.volume;
+                    }
+                }
+            }
+
             const updateData = {
                 status: WorkoutStatus.COMPLETED,
                 endTime: new Date().toISOString(),
                 notes: notes || session.notes,
+                totalVolume: totalVolume
             };
 
             await this.workoutSessionRepository.update(sessionId, updateData);

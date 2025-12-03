@@ -16,14 +16,29 @@ export class GetExerciseStatsUseCase {
     // I'll assume we might add a method to IWorkoutSessionRepository or IExerciseRepository later for this.
     // For this MVP step, I'll create a placeholder implementation that would need a new repository method.
 
-    async execute(_exerciseId: string): Promise<Result<ExerciseStats>> {
-        // Placeholder: In real implementation, we would query the DB for all sets of this exercise
-        // const sets = await this.workoutSessionRepository.getAllSetsForExercise(exerciseId);
+    async execute(exerciseId: string): Promise<Result<ExerciseStats>> {
+        try {
+            const sets = await this.workoutSessionRepository.getSetsForExercise(exerciseId);
 
-        return Result.ok({
-            maxWeight: 0,
-            totalVolume: 0,
-            totalSets: 0
-        });
+            let maxWeight = 0;
+            let totalVolume = 0;
+            let totalSets = 0;
+
+            for (const set of sets) {
+                if (set.weight > maxWeight) {
+                    maxWeight = set.weight;
+                }
+                totalVolume += set.volume;
+                totalSets++;
+            }
+
+            return Result.ok({
+                maxWeight,
+                totalVolume,
+                totalSets
+            });
+        } catch (error) {
+            return Result.fail(error instanceof Error ? error : new Error('Failed to get exercise stats'));
+        }
     }
 }

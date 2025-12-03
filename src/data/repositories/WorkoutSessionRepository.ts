@@ -35,4 +35,19 @@ export class WorkoutSessionRepository extends BaseRepository<WorkoutSession> imp
         const result = await this.execute(`SELECT * FROM WorkoutSet WHERE exerciseSessionId = ? ORDER BY setNumber ASC`, [exerciseSessionId]);
         return result.rows?._array || [];
     }
+
+    async getSetsForExercise(exerciseId: string): Promise<WorkoutSet[]> {
+        // Join WorkoutSet -> ExerciseSession -> TrainingDayExercise -> ExerciseTemplate (to match exerciseId)
+        // Or more simply, if we have exerciseId in TrainingDayExercise
+        const query = `
+            SELECT ws.* 
+            FROM WorkoutSet ws
+            JOIN ExerciseSession es ON ws.exerciseSessionId = es.id
+            JOIN TrainingDayExercise tde ON es.trainingDayExerciseId = tde.id
+            WHERE tde.exerciseId = ?
+            ORDER BY ws.createdAt DESC
+        `;
+        const result = await this.execute(query, [exerciseId]);
+        return result.rows?._array || [];
+    }
 }
