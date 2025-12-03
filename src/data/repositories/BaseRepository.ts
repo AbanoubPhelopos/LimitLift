@@ -7,18 +7,18 @@ export abstract class BaseRepository<T> {
         return databaseClient.execute(query, params);
     }
 
-    protected async findAll(): Promise<T[]> {
+    public async findAll(): Promise<T[]> {
         const result = await this.execute(`SELECT * FROM ${this.tableName}`);
         return result.rows?._array || [];
     }
 
-    protected async findById(id: string): Promise<T | null> {
+    public async findById(id: string): Promise<T | null> {
         const result = await this.execute(`SELECT * FROM ${this.tableName} WHERE id = ?`, [id]);
         const rows = result.rows?._array;
         return rows && rows.length > 0 ? rows[0] : null;
     }
 
-    protected async create(entity: T): Promise<void> {
+    public async create(entity: T): Promise<void> {
         const keys = Object.keys(entity as any);
         const values = Object.values(entity as any);
         const placeholders = keys.map(() => '?').join(', ');
@@ -30,7 +30,7 @@ export abstract class BaseRepository<T> {
         );
     }
 
-    protected async update(id: string, entity: Partial<T>): Promise<void> {
+    public async update(id: string, entity: Partial<T>): Promise<void> {
         const keys = Object.keys(entity);
         const values = Object.values(entity);
         const setClause = keys.map(key => `${key} = ?`).join(', ');
@@ -41,7 +41,7 @@ export abstract class BaseRepository<T> {
         );
     }
 
-    protected async delete(id: string): Promise<void> {
+    public async delete(id: string): Promise<void> {
         await this.execute(`DELETE FROM ${this.tableName} WHERE id = ?`, [id]);
     }
 }

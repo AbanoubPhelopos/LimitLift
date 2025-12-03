@@ -90,6 +90,7 @@ export interface WorkoutSet {
     reps: number;
     volume: number;
     isCompleted: boolean;
+    isWarmup?: boolean;
     notes?: string;
     createdAt: string;
 }

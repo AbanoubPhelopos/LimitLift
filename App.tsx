@@ -18,6 +18,9 @@ import {
 import { databaseClient } from './src/infrastructure/database/DatabaseClient';
 import { migrationManager } from './src/infrastructure/database/MigrationManager';
 
+import { WorkoutSessionRepository } from './src/data/repositories/WorkoutSessionRepository';
+import { StartWorkoutUseCase } from './src/domain/usecases/workout/StartWorkoutUseCase';
+
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [dbStatus, setDbStatus] = useState('Initializing...');
@@ -34,9 +37,15 @@ function App(): React.JSX.Element {
         );
         const tableExists = result.rows?._array.length > 0;
 
+        // Business Logic Verification
+        const sessionRepo = new WorkoutSessionRepository();
+        const startWorkout = new StartWorkoutUseCase(sessionRepo);
+        const sessionResult = await startWorkout.execute('dummy_day_id');
+
         setDbStatus(
-          `Database initialized & Migrations applied ✅\nVariationRotationTracker Table: ${tableExists ? 'Found ✅' : 'Missing ❌'
-          }`
+          `Database initialized & Migrations applied ✅\n` +
+          `VariationRotationTracker Table: ${tableExists ? 'Found ✅' : 'Missing ❌'}\n` +
+          `StartWorkout UseCase: ${sessionResult.success ? 'Success ✅' : 'Failed ❌'}`
         );
       } catch (error) {
         setDbStatus(`Error: ${error}`);
